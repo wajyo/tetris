@@ -1,1 +1,83 @@
-
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Tetris-like Game</title>
+    <style>
+      canvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameCanvas" width="300" height="600"></canvas>
+    <script>
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
+      
+      const blockWidth = 30;
+      const blockHeight = 30;
+      
+      const shapes = [
+        [[0, 1, 0], [1, 1, 1]],
+        [[1, 1], [1, 1]],
+        [[0, 1, 1], [1, 1, 0]],
+        [[1, 1, 0], [0, 1, 1]],
+        [[1, 1, 1, 1]]
+      ];
+      
+      let field = [];
+      for (let i = 0; i < 20; i++) {
+        field[i] = [];
+        for (let j = 0; j < 10; j++) {
+          field[i][j] = 0;
+        }
+      }
+      
+      let blockX = 4;
+      let blockY = 0;
+      let blockShape = shapes[Math.floor(Math.random() * shapes.length)];
+      
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // draw field
+        for (let i = 0; i < 20; i++) {
+          for (let j = 0; j < 10; j++) {
+            if (field[i][j] == 0) {
+              ctx.fillStyle = "#fff";
+            } else {
+              ctx.fillStyle = "#000";
+            }
+            ctx.fillRect(j * blockWidth, i * blockHeight, blockWidth, blockHeight);
+          }
+        }
+        
+        // draw block
+        for (let i = 0; i < blockShape.length; i++) {
+          for (let j = 0; j < blockShape[0].length; j++) {
+            if (blockShape[i][j] == 1) {
+              ctx.fillStyle = "#000";
+              ctx.fillRect((blockX + j) * blockWidth, (blockY + i) * blockHeight, blockWidth, blockHeight);
+            }
+          }
+        }
+      }
+      
+      function update() {
+        blockY++;
+        
+        // check collision
+        for (let i = 0; i < blockShape.length; i++) {
+          for (let j = 0; j < blockShape[0].length; j++) {
+            if (blockShape[i][j] == 1) {
+              if (field[blockY + i] && field[blockY + i][blockX + j] !== 0) {
+                // collision
+                for (let i = 0; i < blockShape.length; i++) {
+                  for (let j = 0; j < blockShape[0].length; j++) {
+                    if (blockShape[i][j] == 1) {
+                      field[blockY + i - 1][blockX + j] = 1;
+                    }
+                  }
+                }
+                blockX
